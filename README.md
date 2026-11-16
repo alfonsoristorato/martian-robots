@@ -50,4 +50,10 @@ The program reads the input from stdin:
 ### Design
 
 - **Mission**: the parser turns the input into a `Mission` (the grid plus each robot with its commands).
-- **New commands**: commands are an enum (`Command`), so a new command type is a new entry plus its behaviour.
+- **Orientation**: each direction carries its own one-point step (`stepX`, `stepY`), so moving forward is a
+  plain addition with no branching. Turning left and right uses an exhaustive `when` which means that adding a new direction
+  does not compile until its turns are defined.
+- **Commands**: `Command` is a sealed interface with one object per command (`Left`, `Right`, `Forward`), each
+  owning its behaviour. A command takes the robot and the grid and returns both, since `Forward` can leave a
+  scent. A new command type is one new object plus an entry in `Command.all`, which the parser uses to
+  recognise its code. A test fails if an implementation is missing from that list.

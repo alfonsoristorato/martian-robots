@@ -1,7 +1,7 @@
 package martianrobots.parser
 
+import martianrobots.command.Command
 import martianrobots.exception.InvalidInputException
-import martianrobots.model.Command
 import martianrobots.model.Grid
 import martianrobots.model.Mission
 import martianrobots.model.Orientation
@@ -76,7 +76,7 @@ object InputParser {
         }
         return line.text.mapIndexed { index, code ->
             Command.fromCode(code)
-                ?: line.fail("unknown instruction '$code' at position ${index + 1}, expected one of ${Command.entries.map { it.code }}")
+                ?: line.fail("unknown instruction '$code' at position ${index + 1}, expected one of ${Command.all.map { it.code }}")
         }
     }
 

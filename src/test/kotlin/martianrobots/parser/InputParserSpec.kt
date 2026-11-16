@@ -7,11 +7,11 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import martianrobots.command.Forward
+import martianrobots.command.Left
+import martianrobots.command.Right
 import martianrobots.exception.InvalidInputException
 import martianrobots.fixtures.SampleInput
-import martianrobots.model.Command.FORWARD
-import martianrobots.model.Command.LEFT
-import martianrobots.model.Command.RIGHT
 import martianrobots.model.Grid
 import martianrobots.model.Orientation
 import martianrobots.model.Position
@@ -67,14 +67,14 @@ class InputParserSpec :
             "treats a blank instruction line as a robot with no moves" {
                 val parsed = InputParser.parse(robotLines("1 1 N", "  ", "2 2 E", "F"))
 
-                parsed.robots.map { it.commands } shouldBe listOf(emptyList(), listOf(FORWARD))
+                parsed.robots.map { it.commands } shouldBe listOf(emptyList(), listOf(Forward))
             }
 
             "accepts any whitespace around and between tokens" {
                 val robot = InputParser.parse(listOf("  5 \t 3 ", " 1   1\tE ", "  LRF  ")).robots.single()
 
                 robot.robot shouldBe Robot(Position(1, 1), Orientation.EAST)
-                robot.commands shouldBe listOf(LEFT, RIGHT, FORWARD)
+                robot.commands shouldBe listOf(Left, Right, Forward)
             }
 
             withTests(

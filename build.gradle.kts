@@ -1,4 +1,5 @@
 plugins {
+    application
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.gradle.ktlint)
     alias(libs.plugins.kover)
@@ -7,13 +8,22 @@ plugins {
 
 group = "martianrobots"
 
+application {
+    mainClass.set("martianrobots.MainKt")
+}
+
+tasks.named<JavaExec>("run") {
+    // Gradle does not forward stdin to `run` by default
+    standardInput = System.`in`
+}
+
 dependencies {
     testImplementation(libs.bundles.kotest)
+    testImplementation(libs.kotlin.reflect)
 }
 
 tasks.test {
     useJUnitPlatform()
-    failOnNoDiscoveredTests = false
 }
 
 tasks.build {
@@ -30,6 +40,11 @@ kotlin {
 
 kover {
     reports {
+        filters {
+            excludes {
+                classes("martianrobots.MainKt")
+            }
+        }
         verify {
             rule {
                 minBound(80)

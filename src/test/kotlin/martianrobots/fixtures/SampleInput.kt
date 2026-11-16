@@ -1,8 +1,6 @@
 package martianrobots.fixtures
 
-import martianrobots.model.Command.FORWARD
-import martianrobots.model.Command.LEFT
-import martianrobots.model.Command.RIGHT
+import martianrobots.command.Command
 import martianrobots.model.Grid
 import martianrobots.model.Mission
 import martianrobots.model.Orientation.EAST
@@ -35,5 +33,5 @@ object SampleInput {
                 ),
         )
 
-    private fun commands(codes: String) = codes.map { mapOf('L' to LEFT, 'R' to RIGHT, 'F' to FORWARD).getValue(it) }
+    private fun commands(codes: String) = codes.map { requireNotNull(Command.fromCode(it)) }
 }
