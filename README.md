@@ -22,7 +22,17 @@ The program reads the input from stdin:
 ./gradlew run -q < input/sample-input.txt
 ```
 
-[input/sample-input.txt](input/sample-input.txt) holds the sample input from the problem statement.
+[input/sample-input.txt](input/sample-input.txt) holds the sample input from the problem statement, and prints:
+
+```
+1 1 E
+3 3 N LOST
+2 3 S
+```
+
+Any other file in the same format can be passed the same way. Invalid input prints an error naming the line
+and the reason to stderr, for example `Error: Line 2: unknown orientation 'X', expected one of [N, E, S, W]`,
+and exits with code 1 (Gradle then also reports the run task as failed).
 
 ## Tests
 
@@ -45,7 +55,8 @@ The program reads the input from stdin:
   are rejected.
 - **Limits**: grid coordinates must be between 0 and 50. Instruction strings can be at most 99 characters.
 - **Starting position**: a robot must start inside the grid.
-- **Errors**: any invalid line stops the program with a message naming the line number and the reason.
+- **Errors**: any invalid line stops the program with a message naming the line number and the reason. The
+  whole input is validated before any robot runs, so invalid input never produces partial output.
 
 ### Scent
 

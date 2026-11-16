@@ -40,11 +40,6 @@ kotlin {
 
 kover {
     reports {
-        filters {
-            excludes {
-                classes("martianrobots.MainKt")
-            }
-        }
         verify {
             rule {
                 minBound(80)
