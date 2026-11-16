@@ -39,4 +39,6 @@ object SampleInput {
             Robot(Position(3, 3), NORTH, lost = true),
             Robot(Position(2, 3), SOUTH),
         )
+
+    val outputLines = listOf("1 1 E", "3 3 N LOST", "2 3 S")
 }
