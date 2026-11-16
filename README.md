@@ -47,8 +47,12 @@ Tests use [Kotest](https://kotest.io) and are split the same way as the code:
   `OutputFormatterSpec`.
 - **End to end**: `MainSpec` runs the app on input streams, including the shipped sample file, and checks
   stdout, stderr and the exit code.
+- **Property tests** (`kotest-property`) check invariants on random grids, robots and command strings: four
+  turns face the start again, turning never moves a robot, every robot ends on the grid with a lost one at an
+  edge facing off it, and any formatted robot parses back as the same robot.
 - **Fixtures**: the sample input, its parsed mission, final robots and output live in
-  `src/test/kotlin/martianrobots/fixtures`, so every layer checks against the same example.
+  `src/test/kotlin/martianrobots/fixtures`, so every layer checks against the same example. The random
+  generators for property tests (`Arbs`) live there too.
 
 ## Assumptions and decisions
 

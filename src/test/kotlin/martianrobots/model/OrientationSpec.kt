@@ -3,6 +3,9 @@ package martianrobots.model
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Exhaustive
+import io.kotest.property.checkAll
+import io.kotest.property.exhaustive.enum
 import martianrobots.model.Orientation.EAST
 import martianrobots.model.Orientation.NORTH
 import martianrobots.model.Orientation.SOUTH
@@ -10,6 +13,30 @@ import martianrobots.model.Orientation.WEST
 
 class OrientationSpec :
     FreeSpec({
+        "properties" - {
+            "four turns in the same direction face the starting orientation again" {
+                checkAll(Exhaustive.enum<Orientation>()) { orientation ->
+                    orientation
+                        .right()
+                        .right()
+                        .right()
+                        .right() shouldBe orientation
+                    orientation
+                        .left()
+                        .left()
+                        .left()
+                        .left() shouldBe orientation
+                }
+            }
+
+            "a left turn undoes a right turn" {
+                checkAll(Exhaustive.enum<Orientation>()) { orientation ->
+                    orientation.right().left() shouldBe orientation
+                    orientation.left().right() shouldBe orientation
+                }
+            }
+        }
+
         withTests(
             nameFn = { (from, to) -> "turning right from $from faces $to" },
             NORTH to EAST,

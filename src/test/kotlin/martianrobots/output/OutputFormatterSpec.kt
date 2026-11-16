@@ -3,10 +3,13 @@ package martianrobots.output
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
+import io.kotest.property.checkAll
+import martianrobots.fixtures.Arbs
 import martianrobots.fixtures.SampleInput
 import martianrobots.model.Orientation
 import martianrobots.model.Position
 import martianrobots.model.Robot
+import martianrobots.parser.InputParser
 
 class OutputFormatterSpec :
     FreeSpec({
@@ -15,6 +18,18 @@ class OutputFormatterSpec :
             Orientation.entries,
         ) { orientation ->
             OutputFormatter.format(Robot(Position(1, 2), orientation)) shouldBe "1 2 ${orientation.code}"
+        }
+
+        "a formatted robot parses back as the same robot" {
+            checkAll(Arbs.gridWithRobot) { (grid, robot) ->
+                val lines = listOf("${grid.maxX} ${grid.maxY}", OutputFormatter.format(robot), "")
+
+                InputParser
+                    .parse(lines)
+                    .robots
+                    .single()
+                    .robot shouldBe robot
+            }
         }
 
         "appends LOST for a lost robot" {

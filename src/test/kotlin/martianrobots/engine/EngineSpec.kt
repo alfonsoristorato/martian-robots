@@ -1,8 +1,11 @@
 package martianrobots.engine
 
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import io.kotest.property.checkAll
+import martianrobots.fixtures.Arbs
 import martianrobots.fixtures.SampleInput
 import martianrobots.fixtures.commandsOf
 import martianrobots.model.Grid
@@ -40,6 +43,17 @@ class EngineSpec :
         "a lost robot ignores the rest of its commands" {
             Engine.run(Mission(grid, listOf(robot(0, 3, NORTH, "FRF")))) shouldBe
                 listOf(Robot(Position(0, 3), NORTH, lost = true))
+        }
+
+        "properties" - {
+            "a robot always ends on the grid, and a lost one at an edge facing off it" {
+                checkAll(Arbs.gridWithRobot, Arbs.commands) { (grid, robot), commands ->
+                    val final = Engine.run(Mission(grid, listOf(RobotInstructions(robot, commands)))).single()
+
+                    (final.position in grid).shouldBeTrue()
+                    if (final.lost) (final.position.step(final.orientation) !in grid).shouldBeTrue()
+                }
+            }
         }
 
         "scents" - {

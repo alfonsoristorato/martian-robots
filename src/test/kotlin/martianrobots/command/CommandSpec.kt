@@ -5,6 +5,8 @@ import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.shouldBeUnique
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import io.kotest.property.checkAll
+import martianrobots.fixtures.Arbs
 import martianrobots.model.Grid
 import martianrobots.model.Orientation.EAST
 import martianrobots.model.Orientation.NORTH
@@ -40,6 +42,19 @@ class CommandSpec :
 
             "fromCode returns null for an unknown code" {
                 Command.fromCode('X') shouldBe null
+            }
+        }
+
+        "properties" - {
+            "turning never moves the robot or changes the grid" {
+                checkAll(Arbs.gridWithRobot) { (grid, robot) ->
+                    listOf(Left, Right).forEach { turn ->
+                        val result = turn.execute(robot, grid)
+
+                        result.robot.position shouldBe robot.position
+                        result.grid shouldBe grid
+                    }
+                }
             }
         }
 
