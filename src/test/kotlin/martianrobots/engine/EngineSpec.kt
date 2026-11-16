@@ -63,6 +63,16 @@ class EngineSpec :
                     )
             }
 
+            "on a one-point grid a single scent blocks falling off every edge" {
+                val mission = Mission(Grid(0, 0), listOf(robot(0, 0, NORTH, "F"), robot(0, 0, EAST, "FRFRFRF")))
+
+                Engine.run(mission) shouldBe
+                    listOf(
+                        Robot(Position(0, 0), NORTH, lost = true),
+                        Robot(Position(0, 0), NORTH),
+                    )
+            }
+
             "scents build up, so a scent still saves a robot several robots later" {
                 val mission = Mission(grid, listOf(robot(1, 3, NORTH, "F"), robot(0, 3, NORTH, "F"), robot(1, 3, NORTH, "F")))
 

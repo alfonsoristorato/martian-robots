@@ -40,6 +40,16 @@ and exits with code 1 (Gradle then also reports the run task as failed).
 ./gradlew test
 ```
 
+Tests use [Kotest](https://kotest.io) and are split the same way as the code:
+
+- **Unit specs** per layer: `GridSpec` and `OrientationSpec` (model), `CommandSpec` (each command, including
+  falling and scents), `InputParserSpec` (valid and invalid input), `EngineSpec` (whole missions) and
+  `OutputFormatterSpec`.
+- **End to end**: `MainSpec` runs the app on input streams, including the shipped sample file, and checks
+  stdout, stderr and the exit code.
+- **Fixtures**: the sample input, its parsed mission, final robots and output live in
+  `src/test/kotlin/martianrobots/fixtures`, so every layer checks against the same example.
+
 ## Assumptions and decisions
 
 ### Input
@@ -64,9 +74,23 @@ and exits with code 1 (Gradle then also reports the run task as failed).
   the grid from that point is ignored, whichever edge it would cross. Moves from that point that stay on the
   grid are unaffected.
 
+### Edge cases covered by tests
+
+- A robot moving onto an edge point stays on the grid; only a move past the edge loses it.
+- A robot falling off each of the four edges is reported at its last position on the grid, with `LOST`.
+- A lost robot ignores the rest of its instructions.
+- A scent saves a later robot at the same point, but not one falling from a different point.
+- Scents build up across robots, so a scent still protects a robot several robots later.
+- On a one-point grid (`0 0`), one scent blocks falling off every edge.
+- A robot with no instructions reports its starting position; a grid with no robots prints nothing.
+
 ### Design
 
+- **Layers**: `parser` turns text into a `Mission`, `engine` runs it, `output` formats the result, and
+  `Main` only connects them to stdin, stdout and stderr. Each layer can be tested on its own.
 - **Mission**: the parser turns the input into a `Mission` (the grid plus each robot with its commands).
+- **Immutable model**: `Position`, `Robot` and `Grid` are immutable data classes. Leaving a scent returns a
+  new `Grid`, which the engine passes from one robot to the next.
 - **Orientation**: each direction carries its own one-point step (`stepX`, `stepY`), so moving forward is a
   plain addition with no branching. Turning left and right uses an exhaustive `when` which means that adding a new direction
   does not compile until its turns are defined.
@@ -76,3 +100,19 @@ and exits with code 1 (Gradle then also reports the run task as failed).
   recognise its code. A test fails if an implementation is missing from that list.
 - **Engine**: runs the robots in input order, carrying the grid (and so its scents) from one robot to the next.
   A lost robot ignores the rest of its commands.
+- **Errors**: input problems raise `InvalidInputException`, under a sealed `MartianRobotsException` so new
+  error types sit in one place. `Main` turns these into a message on stderr and exit code 1. Any other exception is a bug, so it is
+  not caught and fails with its stack trace.
+
+## With more time
+
+- **Stricter number parsing**: coordinates use Kotlin's `toIntOrNull`, which accepts a leading `+` (`+1 1 N`
+  is read as `1 1 N`). A plain-digits check would reject it.
+- **Commands with parameters**, such as a hypothetical "move n points": the sealed interface already allows a
+  `data class` command next to the objects, but parsing would need to read more than one character per
+  command.
+- **Per-direction scents**, if the intended reading turned out to be that a scent only blocks falls in the
+  direction the first robot fell. That is a map from position to directions in place of a set, plus two
+  small changes in `Forward`.
+- **CI**: a GitHub Actions workflow running `./gradlew build` on every push.
+- **A single runnable jar**, so the app runs with `java -jar` and no Gradle at all.
