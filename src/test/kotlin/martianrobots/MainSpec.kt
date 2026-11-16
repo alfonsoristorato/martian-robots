@@ -15,10 +15,13 @@ private data class AppResult(
     val err: String,
 )
 
-private fun runApp(input: InputStream): AppResult {
+private fun runApp(
+    input: InputStream,
+    args: List<String> = emptyList(),
+): AppResult {
     val out = ByteArrayOutputStream()
     val err = ByteArrayOutputStream()
-    val exitCode = run(input, PrintStream(out, true), PrintStream(err, true))
+    val exitCode = run(args, input, PrintStream(out, true), PrintStream(err, true))
     return AppResult(exitCode, out.toString().trim(), err.toString().trim())
 }
 
@@ -28,6 +31,12 @@ class MainSpec :
     FreeSpec({
         "runs the shipped sample input file end to end" {
             val result = runApp(File("input/sample-input.txt").inputStream())
+
+            result shouldBe AppResult(0, SampleInput.outputLines.joinToString("\n"), "")
+        }
+
+        "reads the input from the file named by the first argument instead of stdin" {
+            val result = runApp("not used".byteInputStream(), args = listOf("input/sample-input.txt"))
 
             result shouldBe AppResult(0, SampleInput.outputLines.joinToString("\n"), "")
         }
@@ -89,6 +98,13 @@ class MainSpec :
 
                 result.out.shouldBeEmpty()
                 result.exitCode shouldBe 1
+            }
+
+            "reports an input file that does not exist" {
+                val result = runApp("".byteInputStream(), args = listOf("input/missing.txt"))
+
+                result.exitCode shouldBe 1
+                result.err shouldBe "Error: no input file at '${File("input/missing.txt").absolutePath}'"
             }
 
             "reports empty input" {

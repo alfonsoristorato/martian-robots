@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Martian Robots (choose input file)" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="martianrobots.MainKt" />
+    <module name="martian-robots.main" />
+    <option name="PROGRAM_PARAMETERS" value="&quot;$Prompt:Input file relative to the project root:input/sample-input.txt$&quot;" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

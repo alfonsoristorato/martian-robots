@@ -34,6 +34,23 @@ Any other file in the same format can be passed the same way. Invalid input prin
 and the reason to stderr, for example `Error: Line 2: unknown orientation 'X', expected one of [N, E, S, W]`,
 and exits with code 1 (Gradle then also reports the run task as failed).
 
+The input file can also be passed as the first argument instead of stdin:
+
+```
+./gradlew run -q --args="input/sample-input.txt"
+```
+
+A path that does not exist is reported the same way as invalid input, with exit code 1.
+
+### From IntelliJ
+
+The run configuration **Martian Robots (choose input file)** (in `.run/`) opens a dialog asking for the
+input file, relative to the project root and `/`-separated, and passes it to the app as that argument. The
+dialog is pre-filled with `input/sample-input.txt`, so confirming it as is runs the sample.
+
+![runner_button.png](.run/runner_button.png)
+
+![runner_button_prompt.png](.run/runner_button_prompt.png)
 ## Tests
 
 ```
@@ -104,7 +121,7 @@ Tests use [Kotest](https://kotest.io) and are split the same way as the code:
   recognise its code. A test fails if an implementation is missing from that list.
 - **Engine**: runs the robots in input order, carrying the grid (and so its scents) from one robot to the next.
   A lost robot ignores the rest of its commands.
-- **Errors**: input problems raise `InvalidInputException`, under a sealed `MartianRobotsException` so new
+- **Errors**: input problems raise `InvalidInputException` and a missing input file `InputFileNotFoundException`, both under a sealed `MartianRobotsException` so new
   error types sit in one place. `Main` turns these into a message on stderr and exit code 1. Any other exception is a bug, so it is
   not caught and fails with its stack trace.
 
