@@ -67,6 +67,7 @@ Tests use [Kotest](https://kotest.io) and are split the same way as the code:
 - **Property tests** (`kotest-property`) check invariants on random grids, robots and command strings: four
   turns face the start again, turning never moves a robot, every robot ends on the grid with a lost one at an
   edge facing off it, and any formatted robot parses back as the same robot.
+- **Coverage**: Kover fails the build below 95% line coverage.
 - **Fixtures**: the sample input, its parsed mission, final robots and output live in
   `src/test/kotlin/martianrobots/fixtures`, so every layer checks against the same example. The random
   generators for property tests (`Arbs`) live there too.
