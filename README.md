@@ -47,6 +47,12 @@ The program reads the input from stdin:
 - **Starting position**: a robot must start inside the grid.
 - **Errors**: any invalid line stops the program with a message naming the line number and the reason.
 
+### Scent
+
+- A scent belongs to a grid point, not to a direction: once a robot is lost from a point, any later move off
+  the grid from that point is ignored, whichever edge it would cross. Moves from that point that stay on the
+  grid are unaffected.
+
 ### Design
 
 - **Mission**: the parser turns the input into a `Mission` (the grid plus each robot with its commands).
@@ -57,3 +63,5 @@ The program reads the input from stdin:
   owning its behaviour. A command takes the robot and the grid and returns both, since `Forward` can leave a
   scent. A new command type is one new object plus an entry in `Command.all`, which the parser uses to
   recognise its code. A test fails if an implementation is missing from that list.
+- **Engine**: runs the robots in input order, carrying the grid (and so its scents) from one robot to the next.
+  A lost robot ignores the rest of its commands.

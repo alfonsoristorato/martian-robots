@@ -33,7 +33,7 @@ class CommandSpec :
 
             withTests(
                 nameFn = { "fromCode finds $it by '${it.code}'" },
-                Command.all
+                Command.all,
             ) { command ->
                 Command.fromCode(command.code) shouldBe command
             }
